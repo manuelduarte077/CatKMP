@@ -12,7 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.compose.collectAsLazyPagingItems
 import dagger.hilt.android.AndroidEntryPoint
+import dev.donmanuel.kotlinandroidtemplate.presentation.BeerScreen
+import dev.donmanuel.kotlinandroidtemplate.presentation.BeerViewModel
 import dev.donmanuel.kotlinandroidtemplate.ui.theme.KotlinAndroidTemplateTheme
 
 @AndroidEntryPoint
@@ -22,17 +27,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             KotlinAndroidTemplateTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Text(
-                        textAlign = TextAlign.Center,
-                        text = "Base Application",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .fillMaxSize()
-                    )
-                }
+                val viewModel = hiltViewModel<BeerViewModel>()
+                val beers = viewModel.beerPagingFlow.collectAsLazyPagingItems()
+                
+                BeerScreen(beers = beers)
             }
         }
     }

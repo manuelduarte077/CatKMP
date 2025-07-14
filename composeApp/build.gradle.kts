@@ -10,6 +10,8 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.composeHotReload)
+    alias(libs.plugins.ktorKotlinSerialization)
+    alias(libs.plugins.sqlDelight)
 }
 
 kotlin {
@@ -31,7 +33,11 @@ kotlin {
         }
     }
 
-    jvm("desktop")
+    jvm("desktop") {
+        compilations["main"].defaultSourceSet {
+            kotlin.srcDir("src/desktopMain/kotlin")
+        }
+    }
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
@@ -59,7 +65,17 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
+            // Android Koin
+            implementation(libs.koin.android)
+
+            // Ktor
+            implementation(libs.ktor.client.android)
+
+            // SQL Delight
+            implementation(libs.sql.delight.android)
         }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -69,13 +85,56 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
+            // Navigation
+            implementation(libs.navigation.compose)
+
+            // ViewModel
+            implementation(libs.viewmodel.compose)
+
+            // Koin
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+
+            // Settings (Data persistence)
+            implementation(libs.settings.multiplatform)
+
+            // Ktor
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.negotiation)
+            implementation(libs.ktor.kotlin.serialization)
+
+            // Kamel
+            implementation(libs.kamel.image)
         }
+
+        iosMain.dependencies {
+            // Ktor
+            implementation(libs.ktor.client.darwin)
+        }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }
+
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.sql.delight.desktop)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            implementation("org.xerial:sqlite-jdbc:3.45.1.0")
+        }
+
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.mockk.common)
+
+            }
         }
     }
 }
@@ -105,11 +164,27 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    compose.resources {
+        publicResClass = false
+        packageOfResClass = "dev.donmanuel.app.catkmp.resources"
+        generateResClass = auto
+    }
 }
 
 dependencies {
     debugImplementation(compose.uiTooling)
 }
+
+
+sqldelight {
+    databases {
+        create("CatDatabase") {
+            packageName.set("dev.donmanuel.app.catkmp")
+        }
+    }
+}
+
 
 compose.desktop {
     application {
@@ -119,6 +194,11 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "dev.donmanuel.app.catkmp"
             packageVersion = "1.0.0"
+            modules("java.sql")
         }
     }
+}
+
+tasks.register<Delete>("deleteDatabase") {
+    delete(file("cat.db"))
 }

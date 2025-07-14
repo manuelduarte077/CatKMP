@@ -1,0 +1,45 @@
+CREATE TABLE  CatTable(
+    id TEXT NOT NULL,
+    url TEXT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    origin TEXT NOT NULL,
+    temperament TEXT NOT NULL,
+    lifeSpan TEXT NOT NULL,
+    intelligence INTEGER NOT NULL,
+    strangerFriendly INTEGER NOT NULL,
+    dogFriendly INTEGER NOT NULL
+);
+
+CREATE TABLE  FavoriteCatsTable(
+    id TEXT NOT NULL,
+    url TEXT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL,
+    origin TEXT NOT NULL,
+    temperament TEXT NOT NULL,
+    lifeSpan TEXT NOT NULL,
+    intelligence INTEGER NOT NULL,
+    strangerFriendly INTEGER NOT NULL,
+    dogFriendly INTEGER NOT NULL
+);
+
+readAllCats:
+SELECT CatTable.* FROM CatTable;
+
+readAllFavoritesCats:
+SELECT FavoriteCatsTable.* FROM FavoriteCatsTable;
+
+insertCat:
+INSERT INTO CatTable(id, url, name, description, origin, temperament, lifeSpan, intelligence, strangerFriendly, dogFriendly)
+VALUES (?,?,?,?,?,?,?,?,?,?);
+
+insertFavoriteCat:
+INSERT INTO FavoriteCatsTable(id, url, name, description, origin, temperament, lifeSpan, intelligence, strangerFriendly, dogFriendly)
+VALUES (?,?,?,?,?,?,?,?,?,?);
+
+deleteCats:
+DELETE FROM CatTable;
+
+deleteFavoriteCat:
+DELETE FROM FavoriteCatsTable WHERE id = ?;

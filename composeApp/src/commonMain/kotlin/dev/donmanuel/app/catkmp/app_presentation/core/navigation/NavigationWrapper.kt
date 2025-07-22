@@ -1,0 +1,37 @@
+package dev.donmanuel.app.catkmp.app_presentation.core.navigation
+
+import androidx.compose.runtime.Composable
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import dev.donmanuel.app.catkmp.app_presentation.cat.CatDetailScreen
+import dev.donmanuel.app.catkmp.app_presentation.cat.MainScreen
+import dev.donmanuel.app.catkmp.app_presentation.login.LoginScreen
+import dev.donmanuel.app.catkmp.data.local.repository.CatLocalRepository
+
+const val SCREEN_LOGIN = "SCREEN_LOGIN"
+const val SCREEN_CAT_MAIN = "SCREEN_CAT_MAIN"
+const val SCREEN_CAT_DETAIL = "SCREEN_CAT_DETAIL"
+
+@Composable
+fun NavigationWrapper() {
+
+    val mainNavController = rememberNavController()
+
+    NavHost(navController = mainNavController, startDestination = SCREEN_LOGIN) {
+
+        // Login
+        composable(route = SCREEN_LOGIN) { LoginScreen(mainNavController) }
+
+        // CatMainScreen
+        composable(route = SCREEN_CAT_MAIN) { MainScreen(mainNavController) }
+
+        // CatDetail
+        composable(route = SCREEN_CAT_DETAIL) {
+            val catSelected = CatLocalRepository.selectedCat.value
+            if (catSelected != null) {
+                CatDetailScreen(mainNavController, catSelected)
+            }
+        }
+    }
+}

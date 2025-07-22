@@ -3,7 +3,6 @@ package dev.donmanuel.app.catkmp.domain.repository
 import dev.donmanuel.app.catkmp.domain.model.LoginRequest
 
 interface LoginRepository {
-
     /**
  * Performs an asynchronous login operation with the provided credentials.
  *
@@ -21,4 +20,9 @@ interface SignupRepository {
  * @return The UI state representing the result of the signup operation.
  */
 suspend fun signup(signupRequest: dev.donmanuel.app.catkmp.domain.model.SignupRequest): dev.donmanuel.app.catkmp.domain.repository.UiState
+    suspend fun login(loginRequest: LoginRequest): UiState
+}
+
+interface SignupRepository {
+    suspend fun signup(signupRequest: dev.donmanuel.app.catkmp.domain.model.SignupRequest): dev.donmanuel.app.catkmp.domain.repository.UiState
 }

@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 class SignupViewModel(private val signupUseCase: SignupUseCase) : ViewModel() {
     private val _stateSignup = MutableStateFlow<UiState>(UiState.Init)
     val stateSignup: StateFlow<UiState> = _stateSignup.asStateFlow()
-
     /**
      * Initiates the user signup process and updates the signup UI state.
      *
@@ -22,6 +21,7 @@ class SignupViewModel(private val signupUseCase: SignupUseCase) : ViewModel() {
      *
      * @param signupRequest The user information required for signup.
      */
+
     fun signup(signupRequest: SignupRequest) {
         _stateSignup.value = UiState.Loading
         viewModelScope.launch {

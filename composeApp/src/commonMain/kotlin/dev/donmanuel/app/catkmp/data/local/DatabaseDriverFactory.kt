@@ -88,6 +88,7 @@ class LocalDatabase(databaseDriverFactory: DatabaseDriverFactory) {
      * @param signupRequest The user's signup details.
      * @param userId The unique identifier for the user.
      */
+
     fun insertUser(signupRequest: SignupRequest, userId: String) {
         query.insertUser(
             id = userId,
@@ -103,6 +104,7 @@ class LocalDatabase(databaseDriverFactory: DatabaseDriverFactory) {
      *
      * @return A list of users with their IDs, names, usernames, and emails.
      */
+
     fun getAllUsers(): List<SignupResponse> {
         return query.readAllUsers().executeAsList().map {
             SignupResponse(

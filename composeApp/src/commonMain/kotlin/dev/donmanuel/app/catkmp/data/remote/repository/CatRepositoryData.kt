@@ -8,7 +8,7 @@ import dev.donmanuel.app.catkmp.domain.repository.CatRepository
 import dev.donmanuel.app.catkmp.domain.repository.UiState
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.utils.io.errors.IOException
+import kotlinx.io.IOException
 
 const val keyCat = "live_iZiWd3boNh2rNBGQ03JNUAsMSCP4BW26L2gxmqAR1DUsKVfnIyT3ouzV7xJM5P1r"
 const val catUrlList =

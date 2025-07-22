@@ -10,11 +10,11 @@ import dev.donmanuel.app.catkmp.domain.model.SignupResponse
 
 interface DatabaseDriverFactory {
     /**
- * Creates and returns a new SQL driver instance for database access.
- *
- * @return A configured [SqlDriver] for database operations.
- */
-fun createDriver(): SqlDriver
+     * Creates and returns a new SQL driver instance for database access.
+     *
+     * @return A configured [SqlDriver] for database operations.
+     */
+    fun createDriver(): SqlDriver
 }
 
 class LocalDatabase(databaseDriverFactory: DatabaseDriverFactory) {
@@ -88,7 +88,6 @@ class LocalDatabase(databaseDriverFactory: DatabaseDriverFactory) {
      * @param signupRequest The user's signup details.
      * @param userId The unique identifier for the user.
      */
-
     fun insertUser(signupRequest: SignupRequest, userId: String) {
         query.insertUser(
             id = userId,
@@ -104,7 +103,6 @@ class LocalDatabase(databaseDriverFactory: DatabaseDriverFactory) {
      *
      * @return A list of users with their IDs, names, usernames, and emails.
      */
-
     fun getAllUsers(): List<SignupResponse> {
         return query.readAllUsers().executeAsList().map {
             SignupResponse(
@@ -112,6 +110,17 @@ class LocalDatabase(databaseDriverFactory: DatabaseDriverFactory) {
                 name = it.name,
                 user = it.user,
                 email = it.email
+            )
+        }
+    }
+
+    fun getUserByUsername(username: String): SignupRequest? {
+        return query.readAllUsers().executeAsList().firstOrNull { it.user == username }?.let {
+            SignupRequest(
+                name = it.name,
+                user = it.user,
+                email = it.email,
+                password = it.password // hash
             )
         }
     }

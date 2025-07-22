@@ -8,11 +8,11 @@ fun initKoin(config: KoinAppDeclaration? = null) {
     startKoin {
         config?.invoke(this)
         modules(
-            viewModelModule,
-            useCaseModule,
+            database,
             repositoryModule,
-            targetModule,
-            database
+            useCaseModule,
+            viewModelModule,
+            targetModule
         )
     }
 }

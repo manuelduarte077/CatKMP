@@ -1,29 +1,30 @@
 package dev.donmanuel.app.catkmp.data.remote.repository
 
+import dev.donmanuel.app.catkmp.data.local.LocalDatabase
+import dev.donmanuel.app.catkmp.data.local.HashUtils
 import dev.donmanuel.app.catkmp.domain.model.LoginRequest
 import dev.donmanuel.app.catkmp.domain.model.LoginResponse
 import dev.donmanuel.app.catkmp.domain.repository.LoginRepository
 import dev.donmanuel.app.catkmp.domain.repository.UiState
 import kotlinx.coroutines.delay
 
-class LoginRepositoryData : LoginRepository {
-
+class LoginRepositoryData(private val localDatabase: LocalDatabase) : LoginRepository {
     override suspend fun login(loginRequest: LoginRequest): UiState {
         return try {
-
-            delay(2000)
-
-            if (loginRequest.user == "admin" && loginRequest.pass == "secret") {
-
+            delay(1000)
+            val user = localDatabase.getUserByUsername(loginRequest.user)
+            if (user == null) {
+                UiState.Error(message = "User not found")
+            } else if (user.password != HashUtils.sha256(loginRequest.pass)) {
+                UiState.Error(message = "Incorrect password")
+            } else {
                 UiState.Success(
                     result = LoginResponse(
-                        "Manuel Duarte",
-                        "Admin",
-                        "BearerTokenSimulation: GYUHjb6NB6V4Ev6vbfcv3vb6N8yn7"
+                        name = user.name,
+                        rol = "User",
+                        token = "LocalTokenSimulation"
                     )
                 )
-            } else {
-                UiState.Error(message = "User or password incorrect")
             }
         } catch (e: Exception) {
             e.printStackTrace()

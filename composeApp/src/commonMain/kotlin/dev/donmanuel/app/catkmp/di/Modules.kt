@@ -36,7 +36,7 @@ val repositoryModule = module {
     single<LoginRepository> { LoginRepositoryData() }
     single<CatRepository> { CatRepositoryData(get()) }
     single<FavoriteCatRepository> { FavoriteCatRepositoryData(get()) }
-    single<SignupRepository> { SignupRepositoryData() }
+    single<SignupRepository> { SignupRepositoryData(get()) }
 }
 
 val database = module {

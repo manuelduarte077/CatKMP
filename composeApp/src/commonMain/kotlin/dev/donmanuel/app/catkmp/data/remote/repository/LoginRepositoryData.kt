@@ -1,7 +1,6 @@
 package dev.donmanuel.app.catkmp.data.remote.repository
 
 import dev.donmanuel.app.catkmp.data.local.LocalDatabase
-import dev.donmanuel.app.catkmp.data.local.HashUtils
 import dev.donmanuel.app.catkmp.domain.model.LoginRequest
 import dev.donmanuel.app.catkmp.domain.model.LoginResponse
 import dev.donmanuel.app.catkmp.domain.repository.LoginRepository
@@ -15,7 +14,7 @@ class LoginRepositoryData(private val localDatabase: LocalDatabase) : LoginRepos
             val user = localDatabase.getUserByUsername(loginRequest.user)
             if (user == null) {
                 UiState.Error(message = "User not found")
-            } else if (user.password != HashUtils.sha256(loginRequest.pass)) {
+            } else if (user.password != loginRequest.pass) {
                 UiState.Error(message = "Incorrect password")
             } else {
                 UiState.Success(

@@ -110,6 +110,8 @@ kotlin {
         iosMain.dependencies {
             // Ktor
             implementation(libs.ktor.client.darwin)
+            // SQLDelight
+            implementation(libs.sql.delight.native)
         }
 
         commonTest.dependencies {
@@ -139,7 +141,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.mockk.common)
-
+                implementation(libs.kotlin.test)
             }
         }
     }

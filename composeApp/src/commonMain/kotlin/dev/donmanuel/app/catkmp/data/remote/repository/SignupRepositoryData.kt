@@ -1,6 +1,5 @@
 package dev.donmanuel.app.catkmp.data.remote.repository
 
-import dev.donmanuel.app.catkmp.data.local.HashUtils
 import dev.donmanuel.app.catkmp.data.local.LocalDatabase
 import dev.donmanuel.app.catkmp.domain.model.SignupRequest
 import dev.donmanuel.app.catkmp.domain.model.SignupResponse
@@ -21,7 +20,7 @@ class SignupRepositoryData(private val localDatabase: LocalDatabase) : SignupRep
             } else {
                 val userId = UUID.randomUUID().toString()
                 localDatabase.insertUser(
-                    signupRequest.copy(password = HashUtils.sha256(signupRequest.password)),
+                    signupRequest,
                     userId
                 )
                 UiState.Success(

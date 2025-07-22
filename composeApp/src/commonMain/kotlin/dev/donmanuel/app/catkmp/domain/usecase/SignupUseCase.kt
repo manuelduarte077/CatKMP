@@ -11,7 +11,6 @@ class SignupUseCase(private val repository: SignupRepository) {
         if (signupRequest.email.isBlank()) return UiState.Error("Email required")
         if (signupRequest.password.isBlank()) return UiState.Error("Password required")
         if (!signupRequest.email.contains("@")) return UiState.Error("Invalid email")
-        if (signupRequest.password.length < 4) return UiState.Error("Password must be at least 4 characters")
         return repository.signup(signupRequest)
     }
 }

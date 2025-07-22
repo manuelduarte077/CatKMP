@@ -9,13 +9,8 @@ import platform.UIKit.UIAlertController
 import platform.UIKit.UIAlertControllerStyleAlert
 import platform.UIKit.UIApplication
 import dev.donmanuel.app.catkmp.data.local.DatabaseDriverFactory
+import dev.donmanuel.app.catkmp.data.local.IosDatabaseDriverFactory
 import org.koin.dsl.module
-
-class IosDatabaseDriverFactory : DatabaseDriverFactory {
-    override fun createDriver(): app.cash.sqldelight.db.SqlDriver {
-        throw NotImplementedError("Implement NativeSqliteDriver for iOS")
-    }
-}
 
 actual val targetModule: Module = module {
     single<DatabaseDriverFactory> { IosDatabaseDriverFactory() }

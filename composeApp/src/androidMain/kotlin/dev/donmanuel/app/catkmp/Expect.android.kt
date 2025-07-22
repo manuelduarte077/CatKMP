@@ -10,6 +10,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.donmanuel.app.catkmp.data.local.AndroidDatabaseDriverFactory
 import dev.donmanuel.app.catkmp.data.local.DatabaseDriverFactory
+import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.android.ext.koin.androidContext
 
@@ -37,7 +38,7 @@ actual fun AlertDialog(
     }
 }
 
-actual val targetModule = module {
+actual val targetModule: Module = module {
     single<DatabaseDriverFactory> {
         AndroidDatabaseDriverFactory(androidContext())
     }

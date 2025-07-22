@@ -1,22 +1,11 @@
 package dev.donmanuel.app.catkmp.domain.usecase
 
 import dev.donmanuel.app.catkmp.domain.model.LoginRequest
-import dev.donmanuel.app.catkmp.domain.model.SignupRequest
 import dev.donmanuel.app.catkmp.domain.repository.LoginRepository
-import dev.donmanuel.app.catkmp.domain.repository.SignupRepository
 import dev.donmanuel.app.catkmp.domain.repository.UiState
 
 class LoginUseCase(private val repository: LoginRepository) {
 
-    /**
-     * Attempts to log in a user by validating credentials and delegating authentication to the repository.
-     *
-     * Performs checks on the username and password for presence, minimum length, and password complexity.
-     * Returns an error state with a specific message if validation fails, or the result of the repository login if successful.
-     *
-     * @param loginRequest The login credentials to validate and authenticate.
-     * @return A [UiState] representing either a successful login or a specific validation error.
-     */
     suspend operator fun invoke(loginRequest: LoginRequest): UiState {
 
         val user = loginRequest.user
@@ -32,25 +21,5 @@ class LoginUseCase(private val repository: LoginRepository) {
             pass.isNotEmpty() && !regex.matches(pass) -> UiState.Error("Password must contain lower, upper and a number")
             else -> repository.login(loginRequest)
         }
-    }
-}
-
-class SignupUseCase(private val repository: SignupRepository) {
-    /**
-     * Validates the signup request and attempts to register a new user.
-     *
-     * Performs checks on the provided name, username, email, and password fields. Returns a [UiState.Error] with a specific message if any validation fails. If all validations pass, delegates the signup process to the repository and returns its result.
-     *
-     * @param signupRequest The signup request containing user registration details.
-     * @return A [UiState] representing either the result of the signup operation or a validation error.
-     */
-    suspend operator fun invoke(signupRequest: SignupRequest): UiState {
-        if (signupRequest.name.isBlank()) return UiState.Error("Name required")
-        if (signupRequest.user.isBlank()) return UiState.Error("User required")
-        if (signupRequest.email.isBlank()) return UiState.Error("Email required")
-        if (signupRequest.password.isBlank()) return UiState.Error("Password required")
-        if (!signupRequest.email.contains("@")) return UiState.Error("Invalid email")
-        if (signupRequest.password.length < 4) return UiState.Error("Password must be at least 4 characters")
-        return repository.signup(signupRequest)
     }
 }

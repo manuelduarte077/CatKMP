@@ -15,6 +15,11 @@ const val SCREEN_SIGNUP = "SCREEN_SIGNUP"
 const val SCREEN_CAT_MAIN = "SCREEN_CAT_MAIN"
 const val SCREEN_CAT_DETAIL = "SCREEN_CAT_DETAIL"
 
+/**
+ * Sets up the navigation graph for the app, defining routes and associated composable screens.
+ *
+ * Initializes and remembers a navigation controller, and configures navigation between login, signup, main, and cat detail screens.
+ */
 @Composable
 fun NavigationWrapper() {
 

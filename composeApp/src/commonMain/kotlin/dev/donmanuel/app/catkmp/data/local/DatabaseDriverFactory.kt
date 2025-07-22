@@ -9,7 +9,12 @@ import dev.donmanuel.app.catkmp.domain.model.SignupRequest
 import dev.donmanuel.app.catkmp.domain.model.SignupResponse
 
 interface DatabaseDriverFactory {
-    fun createDriver(): SqlDriver
+    /**
+ * Creates and returns a new SQL driver instance for database access.
+ *
+ * @return A configured [SqlDriver] for database operations.
+ */
+fun createDriver(): SqlDriver
 }
 
 class LocalDatabase(databaseDriverFactory: DatabaseDriverFactory) {
@@ -68,10 +73,21 @@ class LocalDatabase(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
+    /**
+     * Retrieves all favorite cats from the database.
+     *
+     * @return A list of favorite cats as `CatModel` objects.
+     */
     fun getAllFavoritesCats(): List<CatModel> {
         return query.readAllFavoritesCats().executeAsList().favoriteCatTableToCatModel()
     }
 
+    /**
+     * Inserts a new user record into the database using the provided signup information and user ID.
+     *
+     * @param signupRequest The user's signup details.
+     * @param userId The unique identifier for the user.
+     */
     fun insertUser(signupRequest: SignupRequest, userId: String) {
         query.insertUser(
             id = userId,
@@ -82,6 +98,11 @@ class LocalDatabase(databaseDriverFactory: DatabaseDriverFactory) {
         )
     }
 
+    /**
+     * Retrieves all user records from the database and returns them as a list of `SignupResponse` objects.
+     *
+     * @return A list of users with their IDs, names, usernames, and emails.
+     */
     fun getAllUsers(): List<SignupResponse> {
         return query.readAllUsers().executeAsList().map {
             SignupResponse(

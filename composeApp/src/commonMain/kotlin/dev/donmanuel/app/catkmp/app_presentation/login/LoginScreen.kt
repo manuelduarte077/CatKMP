@@ -59,6 +59,11 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
+/**
+ * Displays the login screen UI, handling user authentication and navigation.
+ *
+ * Presents input fields for username and password, manages login state, and navigates to the main screen upon successful authentication. If a valid token is already present, bypasses the login UI and navigates directly to the main screen. Provides error feedback via a dialog and allows navigation to the signup screen.
+ */
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 fun LoginScreen(navController: NavController) {

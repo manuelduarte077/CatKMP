@@ -24,6 +24,24 @@ CREATE TABLE  FavoriteCatsTable(
     dogFriendly INTEGER NOT NULL
 );
 
+CREATE TABLE  UserTable(
+    id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    user TEXT NOT NULL,
+    email TEXT NOT NULL,
+    password TEXT NOT NULL
+);
+
+insertUser:
+INSERT INTO UserTable(id, name, user, email, password)
+VALUES (?,?,?,?,?);
+
+readAllUsers:
+SELECT UserTable.* FROM UserTable;
+
+deleteUser:
+DELETE FROM UserTable WHERE id = ?;
+
 readAllCats:
 SELECT CatTable.* FROM CatTable;
 

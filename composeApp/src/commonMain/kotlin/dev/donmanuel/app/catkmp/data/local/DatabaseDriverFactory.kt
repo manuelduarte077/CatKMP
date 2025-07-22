@@ -5,6 +5,8 @@ import dev.donmanuel.app.catkmp.CatDatabase
 import dev.donmanuel.app.catkmp.data.mapper.catTableToCatModel
 import dev.donmanuel.app.catkmp.data.mapper.favoriteCatTableToCatModel
 import dev.donmanuel.app.catkmp.domain.model.CatModel
+import dev.donmanuel.app.catkmp.domain.model.SignupRequest
+import dev.donmanuel.app.catkmp.domain.model.SignupResponse
 
 interface DatabaseDriverFactory {
     fun createDriver(): SqlDriver
@@ -68,5 +70,26 @@ class LocalDatabase(databaseDriverFactory: DatabaseDriverFactory) {
 
     fun getAllFavoritesCats(): List<CatModel> {
         return query.readAllFavoritesCats().executeAsList().favoriteCatTableToCatModel()
+    }
+
+    fun insertUser(signupRequest: SignupRequest, userId: String) {
+        query.insertUser(
+            id = userId,
+            name = signupRequest.name,
+            user = signupRequest.user,
+            email = signupRequest.email,
+            password = signupRequest.password
+        )
+    }
+
+    fun getAllUsers(): List<SignupResponse> {
+        return query.readAllUsers().executeAsList().map {
+            SignupResponse(
+                userId = it.id,
+                name = it.name,
+                user = it.user,
+                email = it.email
+            )
+        }
     }
 }

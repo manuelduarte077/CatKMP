@@ -16,6 +16,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,6 +39,7 @@ import androidx.navigation.NavController
 import dev.donmanuel.app.catkmp.AlertDialog
 import dev.donmanuel.app.catkmp.app_presentation.core.navigation.SCREEN_CAT_MAIN
 import dev.donmanuel.app.catkmp.app_presentation.core.navigation.SCREEN_LOGIN
+import dev.donmanuel.app.catkmp.app_presentation.core.navigation.SCREEN_SIGNUP
 import dev.donmanuel.app.catkmp.data.local.SettingsUtils
 import dev.donmanuel.app.catkmp.data.local.SettingsUtils.KEY_TOKEN
 import dev.donmanuel.app.catkmp.domain.model.LoginRequest
@@ -150,6 +152,12 @@ fun LoginScreen(navController: NavController) {
                         lineHeight = 16.sp,
                         fontWeight = FontWeight.Normal
                     )
+                }
+                TextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { navController.navigate(SCREEN_SIGNUP) }
+                ) {
+                    Text("Create account")
                 }
             }
 

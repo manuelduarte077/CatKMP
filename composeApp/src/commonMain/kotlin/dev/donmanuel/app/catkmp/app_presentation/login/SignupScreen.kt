@@ -1,110 +1,328 @@
 package dev.donmanuel.app.catkmp.app_presentation.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import dev.donmanuel.app.catkmp.app_presentation.core.ui.*
 import dev.donmanuel.app.catkmp.domain.model.SignupRequest
 import dev.donmanuel.app.catkmp.domain.repository.UiState
+import dev.donmanuel.app.catkmp.resources.Res
+import dev.donmanuel.app.catkmp.resources.img_cat
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * Displays the responsive signup screen UI, handling user registration and navigation.
+ *
+ * Features:
+ * - Responsive design that adapts to different screen sizes
+ * - Modern Material 3 design with improved spacing
+ * - Better visual hierarchy and typography
+ * - Improved accessibility and user experience
+ * - Cross-platform compatibility (Android, iOS, Desktop, Web)
+ */
 @Composable
 fun SignupScreen(navController: NavController) {
     val signupViewModel = koinViewModel<SignupViewModel>()
     val stateSignup by signupViewModel.stateSignup.collectAsState()
 
+    // Input variables
     var name by remember { mutableStateOf("") }
     var user by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    // Dialog state
     var showDialog by remember { mutableStateOf(false) }
     var dialogTitle by remember { mutableStateOf("") }
     var dialogMessage by remember { mutableStateOf("") }
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    // Responsive values
+    val padding = getResponsivePadding()
+    val textSizes = getResponsiveTextSizes()
+    val buttonSizes = getResponsiveButtonSizes()
+    val isDesktop = isDesktop()
+    val isTablet = isTablet()
+    
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val scrollState = rememberScrollState()
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Main content
         Column(
-            modifier = Modifier.fillMaxWidth().padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(
+                    horizontal = if (isDesktop) padding.horizontal * 2 else padding.horizontal,
+                    vertical = padding.vertical
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(padding.betweenElements)
         ) {
-            Text("Create Account", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp))
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Name") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
-            )
-            OutlinedTextField(
-                value = user,
-                onValueChange = { user = it },
-                label = { Text("Username") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
-            )
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next)
-            )
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done)
-            )
-            Button(
-                onClick = {
-                    signupViewModel.signup(SignupRequest(name, user, email, password))
-                },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+            // Logo and title section
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Register")
+                Image(
+                    modifier = Modifier
+                        .size(if (isDesktop) 200.dp else if (isTablet) 150.dp else 120.dp)
+                        .padding(top = if (isDesktop) 48.dp else 24.dp),
+                    painter = painterResource(Res.drawable.img_cat),
+                    contentDescription = "Cat Logo"
+                )
+                
+                Text(
+                    text = "Create Account",
+                    fontSize = textSizes.title,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                
+                Text(
+                    text = "Join our community and start exploring",
+                    fontSize = textSizes.body,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
             }
-            TextButton(onClick = { navController.popBackStack() }) {
-                Text("Already have an account? Log in")
+
+            // Form section
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    // Name field
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Full Name") },
+                        placeholder = { Text("Enter your full name") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Words,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+
+                    // Username field
+                    OutlinedTextField(
+                        value = user,
+                        onValueChange = { user = it },
+                        label = { Text("Username") },
+                        placeholder = { Text("Choose a username") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.None,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+
+                    // Email field
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email") },
+                        placeholder = { Text("Enter your email address") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+
+                    // Password field
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        label = { Text("Password") },
+                        placeholder = { Text("Create a password") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    painter = painterResource(
+                                        if (passwordVisible) Res.drawable.ic_visibility 
+                                        else Res.drawable.ic_visibility_off
+                                    ),
+                                    contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                                )
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+
+                    // Register button
+                    Button(
+                        onClick = {
+                            keyboardController?.hide()
+                            signupViewModel.signup(SignupRequest(name, user, email, password))
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(buttonSizes.height),
+                        shape = RoundedCornerShape(buttonSizes.cornerRadius),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(
+                            text = "Create Account",
+                            fontSize = textSizes.body,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    // Login link
+                    TextButton(
+                        onClick = { navController.popBackStack() },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Already have an account? Sign in",
+                            fontSize = textSizes.caption,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             }
         }
+
+        // Loading overlay
         when (stateSignup) {
             UiState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.6f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                strokeWidth = 4.dp,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = "Creating your account...",
+                                fontSize = textSizes.body,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
             }
+            
             is UiState.Success -> {
-                showDialog = true
-                dialogTitle = "Success"
-                dialogMessage = "Account created successfully!"
-                signupViewModel.clearStateSignup()
+                LaunchedEffect(Unit) {
+                    showDialog = true
+                    dialogTitle = "Success!"
+                    dialogMessage = "Your account has been created successfully. You can now sign in."
+                    signupViewModel.clearStateSignup()
+                }
             }
+            
             is UiState.Error -> {
-                showDialog = true
-                dialogTitle = "Error"
-                dialogMessage = (stateSignup as UiState.Error).message ?: "Unknown error"
-                signupViewModel.clearStateSignup()
+                val error = stateSignup as UiState.Error
+                LaunchedEffect(Unit) {
+                    showDialog = true
+                    dialogTitle = "Error"
+                    dialogMessage = error.message ?: "An unknown error occurred"
+                    signupViewModel.clearStateSignup()
+                }
             }
+            
             else -> {}
         }
+
+        // Success/Error dialog
         if (showDialog) {
             AlertDialog(
-                onDismissRequest = { showDialog = false },
+                onDismissRequest = { 
+                    showDialog = false
+                    if (dialogTitle == "Success!") {
+                        navController.popBackStack()
+                    }
+                },
                 title = { Text(dialogTitle) },
                 text = { Text(dialogMessage) },
                 confirmButton = {
-                    Button(onClick = { showDialog = false }) { Text("OK") }
+                    Button(
+                        onClick = { 
+                            showDialog = false
+                            if (dialogTitle == "Success!") {
+                                navController.popBackStack()
+                            }
+                        }
+                    ) {
+                        Text(if (dialogTitle == "Success!") "Sign In" else "OK")
+                    }
                 }
             )
         }

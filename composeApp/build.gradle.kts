@@ -105,6 +105,10 @@ kotlin {
 
             // Kamel
             implementation(libs.kamel.image)
+
+            // Datastore
+            implementation(libs.datastore.core)
+            implementation(libs.datastore.preferences)
         }
 
         iosMain.dependencies {

@@ -2,27 +2,13 @@ package dev.donmanuel.app.catkmp.app_presentation.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +19,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -40,6 +27,7 @@ import dev.donmanuel.app.catkmp.AlertDialog
 import dev.donmanuel.app.catkmp.app_presentation.core.navigation.SCREEN_CAT_MAIN
 import dev.donmanuel.app.catkmp.app_presentation.core.navigation.SCREEN_LOGIN
 import dev.donmanuel.app.catkmp.app_presentation.core.navigation.SCREEN_SIGNUP
+import dev.donmanuel.app.catkmp.app_presentation.core.ui.*
 import dev.donmanuel.app.catkmp.data.local.SettingsUtils
 import dev.donmanuel.app.catkmp.data.local.SettingsUtils.KEY_TOKEN
 import dev.donmanuel.app.catkmp.domain.model.LoginRequest
@@ -60,14 +48,18 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
 
 /**
- * Displays the login screen UI, handling user authentication and navigation.
+ * Displays the responsive login screen UI, handling user authentication and navigation.
  *
- * Presents input fields for username and password, manages login state, and navigates to the main screen upon successful authentication. If a valid token is already present, bypasses the login UI and navigates directly to the main screen. Provides error feedback via a dialog and allows navigation to the signup screen.
+ * Features:
+ * - Responsive design that adapts to different screen sizes
+ * - Modern Material 3 design with improved spacing
+ * - Better visual hierarchy and typography
+ * - Improved accessibility and user experience
+ * - Cross-platform compatibility (Android, iOS, Desktop, Web)
  */
 @OptIn(KoinExperimentalAPI::class)
 @Composable
 fun LoginScreen(navController: NavController) {
-
     // ViewModel
     val loginViewModel = koinViewModel<LoginViewModel>()
     val stateLogin by loginViewModel.stateLogin.collectAsState()
@@ -75,147 +67,245 @@ fun LoginScreen(navController: NavController) {
     // Input variables
     var textUser by remember { mutableStateOf("") }
     var textPass by remember { mutableStateOf("") }
-
     var passwordVisible by remember { mutableStateOf(false) }
 
+    // Dialog state
     var showDialog by remember { mutableStateOf(false) }
     var dialogTitle by remember { mutableStateOf("") }
     var dialogMessage by remember { mutableStateOf("") }
 
+    // Responsive values
+    val padding = getResponsivePadding()
+    val textSizes = getResponsiveTextSizes()
+    val buttonSizes = getResponsiveButtonSizes()
+    val isDesktop = isDesktop()
+    val isTablet = isTablet()
+    
     val keyboardController = LocalSoftwareKeyboardController.current
+    val scrollState = rememberScrollState()
 
+    // Auto-navigate if already logged in
     if (SettingsUtils.data[KEY_TOKEN, ""].isNotEmpty()) {
-        navController.navigate(SCREEN_CAT_MAIN) {
-            popUpTo(SCREEN_LOGIN) { inclusive = true }
+        LaunchedEffect(Unit) {
+            navController.navigate(SCREEN_CAT_MAIN) {
+                popUpTo(SCREEN_LOGIN) { inclusive = true }
+            }
         }
-    } else {
-        Box {
+        return
+    }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Main content
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(
+                    horizontal = if (isDesktop) padding.horizontal * 2 else padding.horizontal,
+                    vertical = padding.vertical
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(padding.betweenElements)
+        ) {
+            // Logo and title section
             Column(
-                modifier = Modifier.fillMaxSize()
-                    .statusBarsPadding()
-                    .padding(start = 14.dp, top = 24.dp, end = 14.dp, bottom = 12.dp)
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Image(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(top = 12.dp)
-                        .align(Alignment.CenterHorizontally),
+                    modifier = Modifier
+                        .size(if (isDesktop) 200.dp else if (isTablet) 150.dp else 120.dp)
+                        .padding(top = if (isDesktop) 48.dp else 24.dp),
                     painter = painterResource(Res.drawable.img_cat),
-                    contentDescription = null
+                    contentDescription = "Cat Logo"
                 )
-
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                    value = textUser,
-                    placeholder = { Text(text = stringResource(Res.string.login_user)) },
-                    shape = RoundedCornerShape(8.dp),
-                    maxLines = 1,
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        capitalization = KeyboardCapitalization.Characters,
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Next
-                    ),
-                    onValueChange = { value ->
-                        if (value.length <= 20) {
-                            textUser = value
-                        }
-                    }
+                
+                Text(
+                    text = "Welcome Back!",
+                    fontSize = textSizes.title,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
                 )
-
-                OutlinedTextField(
-                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                    value = textPass,
-                    placeholder = { Text(text = stringResource(Res.string.login_password)) },
-                    shape = RoundedCornerShape(8.dp),
-                    maxLines = 1,
-                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        val icon =
-                            if (passwordVisible) Res.drawable.ic_visibility else Res.drawable.ic_visibility_off
-                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(painter = painterResource(icon), contentDescription = null)
-                        }
-                    },
-                    onValueChange = { value ->
-                        if (value.length <= 20) {
-                            textPass = value
-                        }
-                    }
+                
+                Text(
+                    text = "Sign in to your account to continue",
+                    fontSize = textSizes.body,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
                 )
-
-                Button(
-                    modifier = Modifier.fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    onClick = {
-                        keyboardController?.hide()
-                        loginViewModel.getLogin(LoginRequest(user = textUser, pass = textPass))
-                    },
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Text(
-                        text = stringResource(Res.string.login),
-                        fontSize = 16.sp,
-                        lineHeight = 16.sp,
-                        fontWeight = FontWeight.Normal
-                    )
-                }
-                TextButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { navController.navigate(SCREEN_SIGNUP) }
-                ) {
-                    Text("Create account")
-                }
             }
 
-            // States
-            when (stateLogin) {
-                UiState.Init -> {}
-                UiState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.7f)),
-                        contentAlignment = Alignment.Center
+            // Form section
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 24.dp),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    // Username field
+                    OutlinedTextField(
+                        value = textUser,
+                        onValueChange = { if (it.length <= 20) textUser = it },
+                        label = { Text("Username") },
+                        placeholder = { Text("Enter your username") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.None,
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+
+                    // Password field
+                    OutlinedTextField(
+                        value = textPass,
+                        onValueChange = { if (it.length <= 20) textPass = it },
+                        label = { Text("Password") },
+                        placeholder = { Text("Enter your password") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        singleLine = true,
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(
+                                    painter = painterResource(
+                                        if (passwordVisible) Res.drawable.ic_visibility 
+                                        else Res.drawable.ic_visibility_off
+                                    ),
+                                    contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                                )
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        )
+                    )
+
+                    // Login button
+                    Button(
+                        onClick = {
+                            keyboardController?.hide()
+                            loginViewModel.getLogin(LoginRequest(user = textUser, pass = textPass))
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(buttonSizes.height),
+                        shape = RoundedCornerShape(buttonSizes.cornerRadius),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
                     ) {
-                        Column {
-                            Text(stringResource(Res.string.loading))
-                            CircularProgressIndicator(strokeWidth = 4.dp)
+                        Text(
+                            text = stringResource(Res.string.login),
+                            fontSize = textSizes.body,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    // Sign up link
+                    TextButton(
+                        onClick = { navController.navigate(SCREEN_SIGNUP) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Don't have an account? Sign up",
+                            fontSize = textSizes.caption,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+        }
+
+        // Loading overlay
+        when (stateLogin) {
+            UiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.6f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                strokeWidth = 4.dp,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = stringResource(Res.string.loading),
+                                fontSize = textSizes.body,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                 }
-
-                is UiState.Success -> {
-
-                    val loginResponse = ((stateLogin as UiState.Success).result as LoginResponse)
-
-                    // Save token
+            }
+            
+            is UiState.Success -> {
+                val loginResponse = (stateLogin as UiState.Success).result as LoginResponse
+                LaunchedEffect(Unit) {
                     SettingsUtils.data.putString(KEY_TOKEN, loginResponse.token)
-
-                    // Clear state login
                     loginViewModel.clearStateLogin()
-
-                    // Navigate to main
                     navController.navigate(SCREEN_CAT_MAIN) {
                         popUpTo(SCREEN_LOGIN) { inclusive = true }
                     }
                 }
-
-                is UiState.Error -> {
-
-                    val loginResponse = stateLogin as UiState.Error
+            }
+            
+            is UiState.Error -> {
+                val error = stateLogin as UiState.Error
+                LaunchedEffect(Unit) {
                     showDialog = true
-                    dialogTitle = "Atención"
-                    dialogMessage = loginResponse.message ?: ""
-
+                    dialogTitle = "Error"
+                    dialogMessage = error.message ?: "An unknown error occurred"
                     loginViewModel.clearStateLogin()
                 }
             }
+            
+            else -> {}
+        }
 
-            if (showDialog) {
-                Box {
-                    AlertDialog(dialogTitle, dialogMessage) {
-                        showDialog = false
+        // Error dialog
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = { Text(dialogTitle) },
+                text = { Text(dialogMessage) },
+                confirmButton = {
+                    Button(onClick = { showDialog = false }) {
+                        Text("OK")
                     }
                 }
-            }
+            )
         }
     }
 }

@@ -1,0 +1,23 @@
+<resources>
+    <string name="login">Iniciar sesión</string>
+    <string name="login_out">Cerrar sesión</string>
+    <string name="login_user">Usuario</string>
+    <string name="login_password">Contraseña</string>
+    <string name="loading">Cargando...</string>
+
+    <string name="cat_list">Lista de gatos</string>
+    <string name="cat_detail">Detalle del gato</string>
+    <string name="cat_favorite">Gatos Favoritos</string>
+
+    <string name="cat_list_refresh">Refrescar</string>
+
+    <string name="cat_description">Descripción: </string>
+    <string name="cat_description_origin">Origen: </string>
+    <string name="cat_description_temperament">Temperamento: </string>
+    <string name="cat_description_life_span">Esperanza de vida: </string>
+    <string name="cat_description_intelligence">Inteligencia: </string>
+    <string name="cat_description_stranger_friendly">Amistoso con extraños: </string>
+    <string name="cat_description_dog_friendly">Amistoso con perros: </string>
+
+    <string name="favorite_cats">Favoritos</string>
+</resources>

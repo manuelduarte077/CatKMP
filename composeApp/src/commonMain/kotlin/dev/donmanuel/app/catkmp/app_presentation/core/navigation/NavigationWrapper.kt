@@ -7,9 +7,11 @@ import androidx.navigation.compose.rememberNavController
 import dev.donmanuel.app.catkmp.app_presentation.cat.CatDetailScreen
 import dev.donmanuel.app.catkmp.app_presentation.cat.MainScreen
 import dev.donmanuel.app.catkmp.app_presentation.login.LoginScreen
+import dev.donmanuel.app.catkmp.app_presentation.login.SignupScreen
 import dev.donmanuel.app.catkmp.data.local.repository.CatLocalRepository
 
 const val SCREEN_LOGIN = "SCREEN_LOGIN"
+const val SCREEN_SIGNUP = "SCREEN_SIGNUP"
 const val SCREEN_CAT_MAIN = "SCREEN_CAT_MAIN"
 const val SCREEN_CAT_DETAIL = "SCREEN_CAT_DETAIL"
 
@@ -22,6 +24,9 @@ fun NavigationWrapper() {
 
         // Login
         composable(route = SCREEN_LOGIN) { LoginScreen(mainNavController) }
+
+        // Signup
+        composable(route = SCREEN_SIGNUP) { SignupScreen(mainNavController) }
 
         // CatMainScreen
         composable(route = SCREEN_CAT_MAIN) { MainScreen(mainNavController) }

@@ -1,8 +1,9 @@
 package dev.donmanuel.app.catkmp.app_presentation.core.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -20,57 +21,39 @@ enum class ScreenSize {
 
 @Composable
 fun getScreenSize(): ScreenSize {
-    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
     
-    // Get the actual screen width in dp
-    val screenWidthDp = configuration.screenWidthDp.dp
-    val screenHeightDp = configuration.screenHeightDp.dp
-    
-    // For desktop, ensure minimum size to avoid mobile-like appearance
-    // If screen width is very small (like in some desktop environments), default to LARGE
-    val effectiveWidth = when {
-        screenWidthDp < 400.dp && screenHeightDp >= 600.dp -> 1024.dp // Default to tablet/desktop size
-        screenWidthDp < 400.dp -> 800.dp // Default to medium size
-        else -> screenWidthDp
-    }
+    // Estimate screen size based on density and typical device characteristics
+    // This is a simplified approach that works across all platforms
+    val estimatedWidth = (density.density * 1000).dp
     
     return when {
-        effectiveWidth < 600.dp -> ScreenSize.SMALL
-        effectiveWidth < 960.dp -> ScreenSize.MEDIUM
-        effectiveWidth < 1280.dp -> ScreenSize.LARGE
+        estimatedWidth < 600.dp -> ScreenSize.SMALL
+        estimatedWidth < 960.dp -> ScreenSize.MEDIUM
+        estimatedWidth < 1280.dp -> ScreenSize.LARGE
         else -> ScreenSize.EXTRA_LARGE
     }
 }
 
 @Composable
 fun isDesktop(): Boolean {
-    val configuration = LocalConfiguration.current
-    val screenWidthDp = configuration.screenWidthDp.dp
-    val screenHeightDp = configuration.screenHeightDp.dp
-    
-    // Desktop detection: wide screen with good aspect ratio
-    // Also consider density to avoid false positives on high-DPI mobile devices
     val density = LocalDensity.current
-    val isHighDensity = density.density > 2.0
     
-    return if (isHighDensity) {
-        // For high-DPI screens, require larger dimensions
-        screenWidthDp >= 1200.dp && screenHeightDp >= 900.dp
-    } else {
-        // For standard density screens
-        screenWidthDp >= 1024.dp && screenHeightDp >= 768.dp
-    }
+    // Desktop detection based on density and typical desktop characteristics
+    // Desktop typically has lower density (1.0-1.5) and larger effective screen size
+    val estimatedWidth = (density.density * 1000).dp
+    
+    return estimatedWidth >= 1024.dp && density.density <= 2.0
 }
 
 @Composable
 fun isTablet(): Boolean {
-    val configuration = LocalConfiguration.current
-    val screenWidthDp = configuration.screenWidthDp.dp
-    val screenHeightDp = configuration.screenHeightDp.dp
+    val density = LocalDensity.current
     
-    // Tablet detection: medium to large screen
-    return (screenWidthDp >= 600.dp && screenWidthDp < 1024.dp) ||
-           (screenHeightDp >= 600.dp && screenHeightDp < 1024.dp)
+    // Tablet detection based on density and typical tablet characteristics
+    val estimatedWidth = (density.density * 1000).dp
+    
+    return estimatedWidth >= 600.dp && estimatedWidth < 1024.dp && density.density > 1.5
 }
 
 @Composable
@@ -199,7 +182,7 @@ fun getResponsiveButtonSizes(): ResponsiveButtonSizes {
  * Get maximum content width for desktop to avoid overly wide layouts
  */
 @Composable
-fun getMaxContentWidth(): androidx.compose.ui.unit.Dp {
+fun getMaxContentWidth(): Dp {
     return when {
         isDesktop() -> 800.dp  // Limit width on desktop for better readability
         isTablet() -> 600.dp   // Limit width on tablet
@@ -208,19 +191,19 @@ fun getMaxContentWidth(): androidx.compose.ui.unit.Dp {
 }
 
 data class ResponsivePadding(
-    val horizontal: androidx.compose.ui.unit.Dp,
-    val vertical: androidx.compose.ui.unit.Dp,
-    val betweenElements: androidx.compose.ui.unit.Dp
+    val horizontal: Dp,
+    val vertical: Dp,
+    val betweenElements: Dp
 )
 
 data class ResponsiveTextSizes(
-    val title: androidx.compose.ui.unit.TextUnit,
-    val subtitle: androidx.compose.ui.unit.TextUnit,
-    val body: androidx.compose.ui.unit.TextUnit,
-    val caption: androidx.compose.ui.unit.TextUnit
+    val title: TextUnit,
+    val subtitle: TextUnit,
+    val body: TextUnit,
+    val caption: TextUnit
 )
 
 data class ResponsiveButtonSizes(
-    val height: androidx.compose.ui.unit.Dp,
-    val cornerRadius: androidx.compose.ui.unit.Dp
+    val height: Dp,
+    val cornerRadius: Dp
 ) 

@@ -16,6 +16,14 @@ import dev.donmanuel.app.catkmp.domain.model.SignupRequest
 import dev.donmanuel.app.catkmp.domain.repository.UiState
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * Displays the signup screen for account creation, handling user input and signup state.
+ *
+ * Presents a form for entering name, username, email, and password, and manages the signup process using a view model.
+ * Shows loading, success, or error dialogs based on the signup result, and allows navigation back to the previous screen.
+ *
+ * @param navController Controller used for navigation actions.
+ */
 @Composable
 fun SignupScreen(navController: NavController) {
     val signupViewModel = koinViewModel<SignupViewModel>()

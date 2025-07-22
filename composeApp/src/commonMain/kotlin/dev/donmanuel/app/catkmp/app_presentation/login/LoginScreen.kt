@@ -109,130 +109,278 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(padding.betweenElements)
         ) {
-            // Logo and title section
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Image(
-                    modifier = Modifier
-                        .size(if (isDesktop) 200.dp else if (isTablet) 150.dp else 120.dp)
-                        .padding(top = if (isDesktop) 48.dp else 24.dp),
-                    painter = painterResource(Res.drawable.img_cat),
-                    contentDescription = "Cat Logo"
-                )
-                
-                Text(
-                    text = "Welcome Back!",
-                    fontSize = textSizes.title,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
-                
-                Text(
-                    text = "Sign in to your account to continue",
-                    fontSize = textSizes.body,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center
-                )
-            }
-
-            // Form section
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 24.dp),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
+            // Desktop wrapper for better layout
+            if (isDesktop) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // Username field
-                    OutlinedTextField(
-                        value = textUser,
-                        onValueChange = { if (it.length <= 20) textUser = it },
-                        label = { Text("Username") },
-                        placeholder = { Text("Enter your username") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.None,
-                            keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Next
-                        ),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
-                    )
-
-                    // Password field
-                    OutlinedTextField(
-                        value = textPass,
-                        onValueChange = { if (it.length <= 20) textPass = it },
-                        label = { Text("Password") },
-                        placeholder = { Text("Enter your password") },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp),
-                        singleLine = true,
-                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done
-                        ),
-                        trailingIcon = {
-                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                                Icon(
-                                    painter = painterResource(
-                                        if (passwordVisible) Res.drawable.ic_visibility 
-                                        else Res.drawable.ic_visibility_off
-                                    ),
-                                    contentDescription = if (passwordVisible) "Hide password" else "Show password"
-                                )
-                            }
-                        },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
-                    )
-
-                    // Login button
-                    Button(
-                        onClick = {
-                            keyboardController?.hide()
-                            loginViewModel.getLogin(LoginRequest(user = textUser, pass = textPass))
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(buttonSizes.height),
-                        shape = RoundedCornerShape(buttonSizes.cornerRadius),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        )
+                    Column(
+                        modifier = Modifier.width(getMaxContentWidth()),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(padding.betweenElements)
                     ) {
+                        // Logo and title section
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Image(
+                                modifier = Modifier
+                                    .size(200.dp)
+                                    .padding(top = 48.dp),
+                                painter = painterResource(Res.drawable.img_cat),
+                                contentDescription = "Cat Logo"
+                            )
+                            
+                            Text(
+                                text = "Welcome Back!",
+                                fontSize = textSizes.title,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                            
+                            Text(
+                                text = "Sign in to your account to continue",
+                                fontSize = textSizes.body,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                        // Form section
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 24.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(24.dp),
+                                verticalArrangement = Arrangement.spacedBy(20.dp)
+                            ) {
+                                // Username field
+                                OutlinedTextField(
+                                    value = textUser,
+                                    onValueChange = { if (it.length <= 20) textUser = it },
+                                    label = { Text("Username") },
+                                    placeholder = { Text("Enter your username") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    keyboardOptions = KeyboardOptions(
+                                        capitalization = KeyboardCapitalization.None,
+                                        keyboardType = KeyboardType.Text,
+                                        imeAction = ImeAction.Next
+                                    ),
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                                    )
+                                )
+
+                                // Password field
+                                OutlinedTextField(
+                                    value = textPass,
+                                    onValueChange = { if (it.length <= 20) textPass = it },
+                                    label = { Text("Password") },
+                                    placeholder = { Text("Enter your password") },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    singleLine = true,
+                                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Password,
+                                        imeAction = ImeAction.Done
+                                    ),
+                                    trailingIcon = {
+                                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                            Icon(
+                                                painter = painterResource(
+                                                    if (passwordVisible) Res.drawable.ic_visibility 
+                                                    else Res.drawable.ic_visibility_off
+                                                ),
+                                                contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                                            )
+                                        }
+                                    },
+                                    colors = OutlinedTextFieldDefaults.colors(
+                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                                    )
+                                )
+
+                                // Login button
+                                Button(
+                                    onClick = {
+                                        keyboardController?.hide()
+                                        loginViewModel.getLogin(LoginRequest(user = textUser, pass = textPass))
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(buttonSizes.height),
+                                    shape = RoundedCornerShape(buttonSizes.cornerRadius),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary
+                                    )
+                                ) {
+                                    Text(
+                                        text = stringResource(Res.string.login),
+                                        fontSize = textSizes.body,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+
+                                // Sign up link
+                                TextButton(
+                                    onClick = { navController.navigate(SCREEN_SIGNUP) },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "Don't have an account? Sign up",
+                                        fontSize = textSizes.caption,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Mobile/Tablet content
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(padding.betweenElements)
+                ) {
+                    // Logo and title section
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .size(if (isTablet) 150.dp else 120.dp)
+                                .padding(top = 24.dp),
+                            painter = painterResource(Res.drawable.img_cat),
+                            contentDescription = "Cat Logo"
+                        )
+                        
                         Text(
-                            text = stringResource(Res.string.login),
+                            text = "Welcome Back!",
+                            fontSize = textSizes.title,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                        
+                        Text(
+                            text = "Sign in to your account to continue",
                             fontSize = textSizes.body,
-                            fontWeight = FontWeight.Medium
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
                         )
                     }
 
-                    // Sign up link
-                    TextButton(
-                        onClick = { navController.navigate(SCREEN_SIGNUP) },
-                        modifier = Modifier.fillMaxWidth()
+                    // Form section
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 24.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
-                        Text(
-                            text = "Don't have an account? Sign up",
-                            fontSize = textSizes.caption,
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(24.dp),
+                            verticalArrangement = Arrangement.spacedBy(20.dp)
+                        ) {
+                            // Username field
+                            OutlinedTextField(
+                                value = textUser,
+                                onValueChange = { if (it.length <= 20) textUser = it },
+                                label = { Text("Username") },
+                                placeholder = { Text("Enter your username") },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(
+                                    capitalization = KeyboardCapitalization.None,
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Next
+                                ),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                                )
+                            )
+
+                            // Password field
+                            OutlinedTextField(
+                                value = textPass,
+                                onValueChange = { if (it.length <= 20) textPass = it },
+                                label = { Text("Password") },
+                                placeholder = { Text("Enter your password") },
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                singleLine = true,
+                                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Password,
+                                    imeAction = ImeAction.Done
+                                ),
+                                trailingIcon = {
+                                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                        Icon(
+                                            painter = painterResource(
+                                                if (passwordVisible) Res.drawable.ic_visibility 
+                                                else Res.drawable.ic_visibility_off
+                                            ),
+                                            contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                                        )
+                                    }
+                                },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                                )
+                            )
+
+                            // Login button
+                            Button(
+                                onClick = {
+                                    keyboardController?.hide()
+                                    loginViewModel.getLogin(LoginRequest(user = textUser, pass = textPass))
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(buttonSizes.height),
+                                shape = RoundedCornerShape(buttonSizes.cornerRadius),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                )
+                            ) {
+                                Text(
+                                    text = stringResource(Res.string.login),
+                                    fontSize = textSizes.body,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+
+                            // Sign up link
+                            TextButton(
+                                onClick = { navController.navigate(SCREEN_SIGNUP) },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Don't have an account? Sign up",
+                                    fontSize = textSizes.caption,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     }
                 }
             }

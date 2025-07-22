@@ -1,3 +1,6 @@
+.cursorrules
+.cursorignore
+.cursor/
 *.iml
 .kotlin
 .gradle

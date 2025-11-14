@@ -1,17 +1,18 @@
 package dev.donmanuel.app.catkmp.app_presentation.login
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import dev.donmanuel.app.catkmp.app_presentation.core.ui.getResponsivePadding
+import dev.donmanuel.app.catkmp.app_presentation.core.ui.isDesktop
+import dev.donmanuel.app.catkmp.app_presentation.core.ui.LoadingOverlay
+import dev.donmanuel.app.catkmp.app_presentation.core.ui.ErrorDialog
+import dev.donmanuel.app.catkmp.app_presentation.core.ui.SuccessDialog
+import dev.donmanuel.app.catkmp.app_presentation.login.components.*
 import dev.donmanuel.app.catkmp.domain.model.SignupRequest
 import dev.donmanuel.app.catkmp.domain.repository.UiState
 import org.koin.compose.viewmodel.koinViewModel
@@ -21,92 +22,112 @@ fun SignupScreen(navController: NavController) {
     val signupViewModel = koinViewModel<SignupViewModel>()
     val stateSignup by signupViewModel.stateSignup.collectAsState()
 
+    // Input variables
     var name by remember { mutableStateOf("") }
     var user by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    // Dialog state
     var showDialog by remember { mutableStateOf(false) }
     var dialogTitle by remember { mutableStateOf("") }
     var dialogMessage by remember { mutableStateOf("") }
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    // Responsive values
+    val padding = getResponsivePadding()
+    val isDesktop = isDesktop()
+    
+    val scrollState = rememberScrollState()
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Main content
         Column(
-            modifier = Modifier.fillMaxWidth().padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(
+                    horizontal = if (isDesktop) padding.horizontal * 2 else padding.horizontal,
+                    vertical = padding.vertical
+                ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(padding.betweenElements)
         ) {
-            Text("Create Account", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp))
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Name") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
-            )
-            OutlinedTextField(
-                value = user,
-                onValueChange = { user = it },
-                label = { Text("Username") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
-            )
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next)
-            )
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done)
-            )
-            Button(
-                onClick = {
-                    signupViewModel.signup(SignupRequest(name, user, email, password))
-                },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
-            ) {
-                Text("Register")
-            }
-            TextButton(onClick = { navController.popBackStack() }) {
-                Text("Already have an account? Log in")
+            ResponsiveWrapper {
+                SignupHeader()
+                SignupForm(
+                    name = name,
+                    user = user,
+                    email = email,
+                    password = password,
+                    passwordVisible = passwordVisible,
+                    onNameChange = { name = it },
+                    onUserChange = { user = it },
+                    onEmailChange = { email = it },
+                    onPasswordChange = { password = it },
+                    onPasswordVisibilityToggle = { passwordVisible = !passwordVisible },
+                    onSignupClick = {
+                        signupViewModel.signup(SignupRequest(name, user, email, password))
+                    },
+                    onLoginClick = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
-        when (stateSignup) {
-            UiState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            }
-            is UiState.Success -> {
+    }
+
+    when (stateSignup) {
+        UiState.Loading -> {
+            LoadingOverlay(message = "Creating your account...")
+        }
+
+        is UiState.Success -> {
+            LaunchedEffect(Unit) {
                 showDialog = true
-                dialogTitle = "Success"
-                dialogMessage = "Account created successfully!"
+                dialogTitle = "Success!"
+                dialogMessage = "Your account has been created successfully. You can now sign in."
                 signupViewModel.clearStateSignup()
             }
-            is UiState.Error -> {
+        }
+
+        is UiState.Error -> {
+            val error = stateSignup as UiState.Error
+            LaunchedEffect(Unit) {
                 showDialog = true
                 dialogTitle = "Error"
-                dialogMessage = (stateSignup as UiState.Error).message ?: "Unknown error"
+                dialogMessage = error.message ?: "An unknown error occurred"
                 signupViewModel.clearStateSignup()
             }
-            else -> {}
         }
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text(dialogTitle) },
-                text = { Text(dialogMessage) },
-                confirmButton = {
-                    Button(onClick = { showDialog = false }) { Text("OK") }
-                }
+
+        else -> {}
+    }
+
+    // Success/Error dialog
+    if (showDialog) {
+        if (dialogTitle == "Success!") {
+            SuccessDialog(
+                title = dialogTitle,
+                message = dialogMessage,
+                onDismiss = {
+                    showDialog = false
+                    navController.popBackStack()
+                },
+                onConfirm = {
+                    showDialog = false
+                    navController.popBackStack()
+                },
+                confirmText = "Sign In"
+            )
+        } else {
+            ErrorDialog(
+                title = dialogTitle,
+                message = dialogMessage,
+                onDismiss = { showDialog = false }
             )
         }
     }
-} 
+}

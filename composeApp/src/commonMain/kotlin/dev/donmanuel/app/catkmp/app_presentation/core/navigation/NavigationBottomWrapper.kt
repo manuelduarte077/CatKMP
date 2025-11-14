@@ -31,7 +31,6 @@ fun NavigationBottomWrapper(
 ) {
 
     NavHost(navController = bottomNavController, startDestination = startDestination) {
-
         composable(route = SCREEN_CAT_LIST) { CatListScreen(mainNavController) }
         composable(route = SCREEN_CAT_FAVORITES) { CatFavoriteScreen(mainNavController) }
     }
@@ -47,10 +46,10 @@ fun BottomNavigation(navController: NavHostController, items: List<BottomBarItem
         tonalElevation = 0.dp
     ) {
         items.forEach { item ->
-
             val selected = currentDestination?.route == item.route
 
-            NavigationBarItem(colors = NavigationBarItemDefaults.colors(
+            NavigationBarItem(
+                colors = NavigationBarItemDefaults.colors(
                 indicatorColor = Color.LightGray.copy(alpha = 0.5f)
             ),
                 icon = item.icon,

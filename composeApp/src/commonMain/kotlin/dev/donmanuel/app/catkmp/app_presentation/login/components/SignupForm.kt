@@ -36,112 +36,107 @@ fun SignupForm(
     val buttonSizes = getResponsiveButtonSizes()
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    ResponsiveCard(
+
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 24.dp),
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        Column(
+        // Name field
+        ResponsiveTextField(
+            value = name,
+            onValueChange = onNameChange,
+            label = { Text("Full Name") },
+            placeholder = { Text("Enter your full name") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Words,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+        )
+
+        // Username field
+        ResponsiveTextField(
+            value = user,
+            onValueChange = onUserChange,
+            label = { Text("Username") },
+            placeholder = { Text("Choose a username") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+        )
+
+        // Email field
+        ResponsiveTextField(
+            value = email,
+            onValueChange = onEmailChange,
+            label = { Text("Email") },
+            placeholder = { Text("Enter your email address") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email,
+                imeAction = ImeAction.Next
+            ),
+        )
+
+        // Password field
+        ResponsiveTextField(
+            value = password,
+            onValueChange = onPasswordChange,
+            label = { Text("Password") },
+            placeholder = { Text("Create a password") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password,
+                imeAction = ImeAction.Done
+            ),
+            trailingIcon = {
+                IconButton(onClick = onPasswordVisibilityToggle) {
+                    Icon(
+                        painter = painterResource(
+                            if (passwordVisible) Res.drawable.ic_visibility
+                            else Res.drawable.ic_visibility_off
+                        ),
+                        contentDescription = if (passwordVisible) "Hide password" else "Show password"
+                    )
+                }
+            },
+        )
+
+        // Register button
+        ResponsiveButton(
+            onClick = {
+                keyboardController?.hide()
+                onSignupClick()
+            },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .height(buttonSizes.height),
         ) {
-            // Name field
-            ResponsiveTextField(
-                value = name,
-                onValueChange = onNameChange,
-                label = { Text("Full Name") },
-                placeholder = { Text("Enter your full name") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.Words,
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
+            ResponsiveText(
+                text = "Create Account",
             )
+        }
 
-            // Username field
-            ResponsiveTextField(
-                value = user,
-                onValueChange = onUserChange,
-                label = { Text("Username") },
-                placeholder = { Text("Choose a username") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    capitalization = KeyboardCapitalization.None,
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
+        // Login link
+        TextButton(
+            onClick = onLoginClick,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            ResponsiveText(
+                text = "Already have an account? Sign in",
+                color = MaterialTheme.colorScheme.primary
             )
-
-            // Email field
-            ResponsiveTextField(
-                value = email,
-                onValueChange = onEmailChange,
-                label = { Text("Email") },
-                placeholder = { Text("Enter your email address") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                    imeAction = ImeAction.Next
-                ),
-            )
-
-            // Password field
-            ResponsiveTextField(
-                value = password,
-                onValueChange = onPasswordChange,
-                label = { Text("Password") },
-                placeholder = { Text("Create a password") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
-                trailingIcon = {
-                    IconButton(onClick = onPasswordVisibilityToggle) {
-                        Icon(
-                            painter = painterResource(
-                                if (passwordVisible) Res.drawable.ic_visibility
-                                else Res.drawable.ic_visibility_off
-                            ),
-                            contentDescription = if (passwordVisible) "Hide password" else "Show password"
-                        )
-                    }
-                },
-            )
-
-            // Register button
-            ResponsiveButton(
-                onClick = {
-                    keyboardController?.hide()
-                    onSignupClick()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(buttonSizes.height),
-            ) {
-                ResponsiveText(
-                    text = "Create Account",
-                )
-            }
-
-            // Login link
-            TextButton(
-                onClick = onLoginClick,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                ResponsiveText(
-                    text = "Already have an account? Sign in",
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
         }
     }
-} 
+}

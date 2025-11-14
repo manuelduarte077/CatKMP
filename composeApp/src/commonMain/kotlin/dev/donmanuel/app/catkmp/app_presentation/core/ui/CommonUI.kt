@@ -18,10 +18,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/**
- * Common UI components for consistent design across the app
- */
-
 @Composable
 fun LoadingOverlay(
     message: String = "Loading...",

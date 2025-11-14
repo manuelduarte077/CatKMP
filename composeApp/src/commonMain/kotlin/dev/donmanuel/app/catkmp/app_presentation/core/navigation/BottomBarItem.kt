@@ -12,7 +12,6 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 
 sealed class BottomBarItem {
-
     abstract val route: String
     abstract val titleResId: StringResource
     abstract val icon: @Composable () -> Unit
